@@ -1,5 +1,9 @@
 package com.boundlessgeo.keycloakadmin;
 
+
+
+import org.springframework.boot.context.embedded.undertow.UndertowBuilderCustomizer;
+import org.springframework.boot.context.embedded.undertow.UndertowEmbeddedServletContainerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -10,10 +14,27 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 
+
+
 @Configuration
 public class WebMvcConfig extends WebMvcConfigurerAdapter {
 
     private static final String[] CLASSPATH_RESOURCE_LOCATIONS = { "classpath:/public/" };
+    
+    @Bean
+    public UndertowEmbeddedServletContainerFactory embeddedServletContainerFactory() {
+        UndertowEmbeddedServletContainerFactory factory = 
+          new UndertowEmbeddedServletContainerFactory();
+         
+        factory.addBuilderCustomizers(new UndertowBuilderCustomizer() {
+            @Override
+            public void customize(io.undertow.Undertow.Builder builder) {
+                builder.addHttpListener(8081, "0.0.0.0");
+            }
+        });
+         
+        return factory;
+    }
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
